@@ -1,0 +1,45 @@
+import sqlite3
+class Database:
+    def __init__(self,db):
+        self.con = sqlite3.connect(db)
+        self.cur = self.con.cursor()
+        sql = """
+        create table if not exists empdb(
+            id Integer Primary Key,
+            name text,
+            age text,
+            doj text,
+            email text,
+            gender text,
+            designation text,
+            contact text,
+            city text
+        )
+        """
+        self.cur.execute(sql)
+        self.con.commit()
+
+# Inserting a Data
+    def insert(self,name,age,doj,email,gender,designation,contact,city):
+        self.cur.execute("insert into empdb values (NULL,?,?,?,?,?,?,?,?)",
+                         (name,age,doj,email,gender,designation,contact,city))
+        self.con.commit()
+
+# Fetching the Data
+    def fetch(self):
+        self.cur.execute("select * from empdb")
+        rows = self.cur.fetchall()
+        return(rows)
+
+# Delete Record from Database
+    def remove(self,id):
+        self.cur.execute("delete from empdb where id=?",(id,))
+        self.con.commit()
+
+# Update existing record from Database
+    def update(self, id, name,age,doj,email,gender,designation,contact,city):
+        self.cur.execute("update empdb set name=?,age=?,doj=?,email=?,gender=?,designation=?,contact=?,city=? where id=?",
+                         (name,age,doj,email,gender,designation,contact,city,id))
+        self.con.commit()
+
+e = Database("Employee Details.db")
