@@ -1,0 +1,187 @@
+# Import Tkinter Package
+from tkinter import *
+from tkinter import ttk
+from tkinter import messagebox
+from db import Database
+
+db = Database("Employee Details.db")
+
+# Create object as root for the class Tk
+root = Tk()
+# To set Title for GUI window
+root.title("Employee Database Management")
+# To set the screen size along with x-axis and y-axis
+root.geometry("1920x1080+0+0")
+
+# To set Background color
+root.config(bg="#92cbdf")
+# To set the window size full mazimize
+root.state("zoomed")
+
+# Create variables that are required for following application
+name = StringVar()
+age = StringVar()
+doj = StringVar()
+email = StringVar()
+gender = StringVar()
+designation = StringVar()
+contact = StringVar()
+city = StringVar()
+
+# To create labels and inputs for creating the form
+# Entries Frame
+entries_frame = Frame(root,bg='#51abcb')
+# Inorder to attach the form with the pack function
+entries_frame.pack(side=TOP,fill=X)
+
+# Create Heading for the Form
+title = Label(entries_frame,text="Employee Management Application",font=("Poppins",20,'bold'),bg='#51abcb',fg='white')
+title.grid(row=0,columnspan=2,padx=10,pady=20)
+
+# Create labels such as name, age, email,etc
+lblName = Label(entries_frame,text="Name",font=("Poppins",16),bg='#51abcb',fg='white')
+lblName.grid(row=1,column=0,padx=10,pady=10,sticky='w')
+
+# Create text box for the above labels
+txtName = Entry(entries_frame,textvariable=name,font=("Poppins",16),width=30)
+txtName.grid(row=1,column=1,sticky='w')
+
+# Similarly Create label and textbox for other fields
+lblAge = Label(entries_frame,text="Age",font=("Poppins",16),bg='#51abcb',fg='white')
+lblAge.grid(row=1,column=2,padx=10,pady=10,sticky='w')
+
+txtAge = Entry(entries_frame,textvariable=age,font=("Poppins",16),width=30)
+txtAge.grid(row=1,column=3,sticky='w')
+
+lbldoj = Label(entries_frame,text="D.O.J",font=("Poppins",16),bg='#51abcb',fg='white')
+lbldoj.grid(row=2,column=0,padx=10,pady=10,sticky='w')
+
+txtdoj = Entry(entries_frame,textvariable=doj,font=("Poppins",16),width=30)
+txtdoj.grid(row=2,column=1,sticky='w')
+
+lblemail = Label(entries_frame,text="Email Address",font=("Poppins",16),bg='#51abcb',fg='white')
+lblemail.grid(row=2,column=2,padx=10,pady=10,sticky='w')
+
+txtemail = Entry(entries_frame,textvariable=email,font=("Poppins",16),width=30)
+txtemail.grid(row=2,column=3,sticky='w')
+
+lblgender = Label(entries_frame,text="Gender",font=("Poppins",16),bg='#51abcb',fg='white')
+lblgender.grid(row=3,column=0,padx=10,pady=10,sticky='w')
+
+# Create Combo Box i.e Dropdown selection for Gender
+combogender = ttk.Combobox(entries_frame,textvariable=gender,font=("Poppins",16),width=28,state='readonly')
+combogender['values'] = ("Male","Female")
+combogender.grid(row=3,column=1,sticky='w')
+
+lbldesig = Label(entries_frame,text="Designation",font=("Poppins",16),bg='#51abcb',fg='white')
+lbldesig.grid(row=3,column=2,padx=10,pady=10,sticky='w')
+
+txtdesig = Entry(entries_frame,textvariable=designation,font=("Poppins",16),width=30)
+txtdesig.grid(row=3,column=3,sticky='w')
+
+lblcontact = Label(entries_frame,text="Contact No.",font=("Poppins",16),bg='#51abcb',fg='white')
+lblcontact.grid(row=4,column=0,padx=10,pady=10,sticky='w')
+
+txtcontact = Entry(entries_frame,textvariable=contact,font=("Poppins",16),width=30)
+txtcontact.grid(row=4,column=1,sticky='w')
+
+lblcity = Label(entries_frame,text="City.",font=("Poppins",16),bg='#51abcb',fg='white')
+lblcity.grid(row=4,column=2,padx=10,pady=10,sticky='w')
+
+txtcity = Entry(entries_frame,textvariable=city,font=("Poppins",16),width=30)
+txtcity.grid(row=4,column=3,sticky='w')
+
+# Create Buttons For controls
+# Create Functions Add,remove,update the form
+def getData(event):
+    select_row = tv.focus()
+    data = tv.item(select_row)
+    global row
+    row = data['values']
+    #print(row)
+    name.set(row[1])
+    age.set(row[2])
+    doj.set(row[3])
+    email.set(row[4])
+    gender.set(row[5])
+    designation.set(row[6])
+    contact.set(row[7])
+    city.set(row[8])
+def displayall():
+    tv.delete(*tv.get_children()) # to delete duplicate or replicated records in table, when this function gets called more than one time
+    for row in db.fetch():
+        tv.insert("",END,values=row)
+def add_emp():
+    if txtName.get()== "" or txtAge.get()== "" or txtdoj.get()== "" or txtemail.get()== "" or combogender.get()== "" or txtdesig.get()== "" or txtcontact.get()== "" or txtcity.get()== "":
+        messagebox.showerror("Error","All the Fields Are Manditory")
+        return
+    db.insert(txtName.get(),txtAge.get(),txtdoj.get(),txtemail.get(),combogender.get(),txtdesig.get(),txtcontact.get(),txtcity.get())
+    messagebox.showinfo("Successfull","Record Inserted")
+    clearall()
+    displayall()
+def update_emp():
+    if txtName.get() == "" or txtAge.get() == "" or txtdoj.get() == "" or txtemail.get() == "" or combogender.get() == "" or txtdesig.get() == "" or txtcontact.get() == "" or txtcity.get() == "":
+        messagebox.showerror("Error", "All the Fields Are Manditory")
+        return
+    db.update(row[0],txtName.get(), txtAge.get(), txtdoj.get(), txtemail.get(), combogender.get(), txtdesig.get(),
+              txtcontact.get(), txtcity.get())
+    messagebox.showinfo("Successfull", "Record Updated")
+    clearall()
+    displayall()
+def delete_emp():
+    db.remove(row[0])
+    messagebox.showinfo("Success","Record Deleted")
+    clearall()
+    displayall()
+def clearall():
+    name.set("")
+    age.set("")
+    doj.set("")
+    email.set("")
+    gender.set("")
+    designation.set("")
+    contact.set("")
+    city.set("")
+
+# Button Frame
+btn_frame = Frame(entries_frame,bg="#51abcb")
+btn_frame.grid(row=5,column=0,columnspan=4,padx=10,pady=10,sticky='w')
+# Insert Button
+btnAdd = Button(btn_frame,command=add_emp,text="Add Record",width=15,font=("Poppins",12),fg='white',bg='#3a25be',bd=0)
+btnAdd.grid(row=0,column=0)
+#Update Button
+btnEdit = Button(btn_frame,command=update_emp,text="Update Record",width=15,font=("Poppins",12),fg='white',bg='#be255c',bd=0)
+btnEdit.grid(row=0,column=1,padx=20)
+#Delete Button
+btnDel = Button(btn_frame,command=delete_emp,text="Delete Record",width=15,font=("Poppins",12),fg='white',bg='#be3a25',bd=0)
+btnDel.grid(row=0,column=2,padx=20)
+#ClearAll Button
+btnClr = Button(btn_frame,command=clearall,text="Clear All",width=15,font=("Poppins",12),fg='white',bg='#170f4c',bd=0)
+btnClr.grid(row=0,column=3,padx=20)
+
+# Table Frame
+tree_frame = Frame(root,bg='#d3eaf2')
+tree_frame.place(x=0,y=410,width=1920,height=700)
+style = ttk.Style()
+style.configure("mystyle.Treeview",font=("Calibri",16),rowheight=50)
+style.configure("mystyle.Treeview.Heading",font=("Calibri",16))
+tv=ttk.Treeview(tree_frame,columns=("1","2","3","4","5","6","7","8","9"),style="mystyle.Treeview")
+tv.heading("1",text="ID")
+tv.column("1",width=5)
+tv.heading("2",text="Name")
+tv.heading("3",text="Age")
+tv.column("3",width=5)
+tv.heading("4",text="Date of Join")
+tv.column("4",width=50)
+tv.heading("5",text="Email")
+tv.heading("6",text="Gender")
+tv.column("6",width=10)
+tv.heading("7",text="Designation")
+tv.heading("8",text="Contact")
+tv.heading("9",text="City")
+tv['show'] = 'headings'
+tv.bind("<ButtonRelease-1>",getData)
+tv.pack(fill=X)
+
+displayall()
+root.mainloop()
